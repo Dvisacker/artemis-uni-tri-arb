@@ -57,14 +57,6 @@ $ forge script script/Counter.s.sol:CounterScript --rpc-url <your_rpc_url> --pri
 $ cast <subcommand>
 ```
 
-You can run the rust tests with the following command: 
-
-### Bindings
-
-```sh
-forge bind --bindings-path ./bindings --root ./contracts --crate-name bindings
-```
-
 ### Help
 
 ```shell
