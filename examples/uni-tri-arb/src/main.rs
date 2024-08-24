@@ -2,10 +2,7 @@ use std::sync::Arc;
 
 use anyhow::Result;
 use artemis_core::{
-    collectors::{
-        block_collector::{BlockCollector, NewBlock},
-        mempool_collector::MempoolCollector,
-    },
+    collectors::{block_collector::BlockCollector, mempool_collector::MempoolCollector},
     engine::Engine,
     executors::mempool_executor::MempoolExecutor,
     types::{CollectorMap, ExecutorMap},
@@ -36,7 +33,6 @@ pub struct Args {
 
 #[tokio::main]
 async fn main() -> Result<()> {
-    // Set up tracing and parse args.
     let filter = filter::Targets::new()
         .with_target("uni-tri-arb", Level::INFO)
         .with_target("artemis_core", Level::INFO);
@@ -55,7 +51,6 @@ async fn main() -> Result<()> {
     let address = wallet.address();
 
     let provider = Arc::new(provider.nonce_manager(address).with_signer(wallet.clone()));
-
     let mut engine: Engine<Event, Action> = Engine::default();
 
     let block_collector = Box::new(BlockCollector::new(provider.clone()));
@@ -63,7 +58,7 @@ async fn main() -> Result<()> {
     engine.add_collector(Box::new(block_collector));
 
     let mempool_collector = Box::new(MempoolCollector::new(provider.clone()));
-    let mempool_collector = CollectorMap::new(mempool_collector, |tx| Event::UniswapOrder);
+    let mempool_collector = CollectorMap::new(mempool_collector, |tx| Event::UniswapOrder(tx));
     engine.add_collector(Box::new(mempool_collector));
 
     let strategy = UniTriArb::new(Arc::new(provider.clone()), wallet);
